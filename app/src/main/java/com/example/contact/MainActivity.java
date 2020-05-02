@@ -1,18 +1,28 @@
 package com.example.contact;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
+
+import com.example.contact.Adapter.ContactRecyclerAdapter;
+import com.example.contact.DataModel.Contact;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         init();
+        setContentView(R.layout.activity_main);
+        findViewById(R.id.recycler_view);
     }
 
     private void init() {
@@ -22,6 +32,4 @@ public class MainActivity extends AppCompatActivity {
         transaction.addToBackStack(null);
         transaction.commit();
     }
-
-
 }

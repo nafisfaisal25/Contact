@@ -12,8 +12,11 @@
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
-            <include layout = "@layout/layout_toolbar"/>
+            android:layout_height="match_parent"
+            android:id="@+id/abc"
+            app:contentInsetStart="0dp">
+            <include layout = "@layout/layout_toolbar_view_contact"/>
+            <include layout="@layout/layout_toolbar_search_contact"/>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
