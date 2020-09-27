@@ -36,7 +36,7 @@ public class ViewContactFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragement_view_contact_info, container, false);
         mContact = getContactFromBundle();
-        Log.d(TAG, "onCreateView: " + mContact.getName());
+        Log.d(TAG, "onCreateView: Name: " + mContact.getName());
         mBackArrow = mView.findViewById(R.id.view_contact_toolbar_back_icon);
         mEditButton = mView.findViewById(R.id.view_contact_toolbar_edit_icon);
         setListener();
