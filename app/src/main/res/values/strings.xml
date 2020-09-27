@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Contact</string>
+
+<!--    fragment names-->
+    <string name="view_contact_list_fragment">ViewContactListFragment</string>
+    <string name="edit_contact_list_fragment">EditContactFragment</string>
+    <string name="view_contact_fragment">ViewContactFragment</string>
+    <string name="contact">Contact</string>
 </resources>

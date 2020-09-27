@@ -1,8 +1,11 @@
 package com.example.contact.DataModel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.function.Consumer;
 
-public class Contact {
+public class Contact implements Parcelable {
     private String mName;
     private String mProfileImageUrl;
     private String mContactNumber;
@@ -68,5 +71,15 @@ public class Contact {
         Contact contact = new Contact();
         contactConsumer.accept(contact);
         return contact;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }

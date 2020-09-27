@@ -14,6 +14,7 @@ import com.example.contact.DataModel.Contact;
 import com.example.contact.R;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -21,10 +22,12 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
 
     private final Context mContext;
     List<Contact>mContactList;
+    Consumer<Integer> mOnClickListener;
 
-    public ContactRecyclerAdapter(Context context, List<Contact> mContactList) {
+    public ContactRecyclerAdapter(Context context, List<Contact> mContactList, Consumer<Integer>onClickListener) {
         this.mContactList = mContactList;
         mContext = context;
+        mOnClickListener = onClickListener;
     }
 
     @NonNull
@@ -57,11 +60,12 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
             super(itemView);
             imageView = itemView.findViewById(R.id.contact_image);
             textView = itemView.findViewById(R.id.contact_name);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-
+            mOnClickListener.accept(getAdapterPosition());
         }
     }
 }
