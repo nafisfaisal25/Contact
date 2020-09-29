@@ -8,6 +8,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,8 +17,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.contact.Adapter.ContactInfoAdapter;
 import com.example.contact.DataModel.Contact;
+import com.example.contact.utils.ImageLoader;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ViewContactFragment extends Fragment {
@@ -24,12 +35,15 @@ public class ViewContactFragment extends Fragment {
     private static final String TAG = "ViewContactFragment";
 
     //vars
-    private View mBackArrow;
-    private View mEditButton;
     private Contact mContact;
 
     //ui_component
     View mView;
+    private RecyclerView mRecyclerView;
+    private CircleImageView mImageView;
+    private TextView mTextView;
+    private View mBackArrow;
+    private View mEditButton;
 
     @Nullable
     @Override
@@ -39,10 +53,37 @@ public class ViewContactFragment extends Fragment {
         Log.d(TAG, "onCreateView: Name: " + mContact.getName());
         mBackArrow = mView.findViewById(R.id.view_contact_toolbar_back_icon);
         mEditButton = mView.findViewById(R.id.view_contact_toolbar_edit_icon);
+        mImageView = mView.findViewById(R.id.contact_image);
+        mTextView = mView.findViewById(R.id.contact_name);
+        mRecyclerView = mView.findViewById(R.id.contact_properties);
+        initView();
         setListener();
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) mView.findViewById(R.id.view_contact_toolbar));
         setHasOptionsMenu(true);
         return mView;
+    }
+
+    private void initView() {
+        setText();
+        setImage();
+        initContactInfoAdapter();
+    }
+
+    private void initContactInfoAdapter() {
+        List<String> contactInfo = new ArrayList<>();
+        contactInfo.add(mContact.getNumber());
+        contactInfo.add(mContact.getMail());
+        ContactInfoAdapter adapter = new ContactInfoAdapter(contactInfo);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void setImage() {
+        ImageLoader.loadImage(getContext(), mImageView, mContact.getImageUrl());
+    }
+
+    private void setText() {
+        mTextView.setText(mContact.getName());
     }
 
     private void setListener() {

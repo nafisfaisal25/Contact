@@ -28,8 +28,9 @@ public class Contact implements Parcelable {
         return this;
     }
 
-    public void setImageUrl(String mImageUrl) {
+    public Contact setImageUrl(String mImageUrl) {
         this.mProfileImageUrl = mImageUrl;
+        return this;
     }
 
     public Contact setNumber(String mNumber) {

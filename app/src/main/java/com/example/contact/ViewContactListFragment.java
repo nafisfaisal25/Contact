@@ -131,9 +131,10 @@ public class ViewContactListFragment extends Fragment {
     private void createDummyContactList() {
         for(int i=0;i<100;i++){
             Contact contact = Contact.create(contact1 -> {
-                contact1.setName("NFS")
+                contact1.setName("Nafis Faisal")
                         .setMail("fnafis0@gmail.com")
-                        .setImageUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/1200px-Android_robot.svg.png");
+                        .setImageUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/1200px-Android_robot.svg.png")
+                        .setNumber("+880 1867-775687");
             });
             mContactList.add(contact);
         }
