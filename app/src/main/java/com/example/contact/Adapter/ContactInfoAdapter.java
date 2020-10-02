@@ -45,6 +45,13 @@ public class ContactInfoAdapter extends RecyclerView.Adapter<ContactInfoAdapter.
         if (mContactInfo.get(position).contains("@")) {
             holder.leftImageView.setImageResource(R.drawable.email_ic);
             holder.centerTextView.setText(mContactInfo.get(position));
+            holder.leftImageView.setOnClickListener(view -> {
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String [] {mContactInfo.get(position)});
+                emailIntent.setType("plain/text");
+
+                mContext.startActivity(emailIntent);
+            });
         } else {
             holder.leftImageView.setImageResource(R.drawable.ic_call);
             holder.rightImageView.setImageResource(R.drawable.ic_message);
@@ -57,6 +64,12 @@ public class ContactInfoAdapter extends RecyclerView.Adapter<ContactInfoAdapter.
                 } else {
                     ((MainActivity)mContext).verifyPermission(Permissions.PHONE_PERMISSION);
                 }
+            });
+
+            holder.rightImageView.setOnClickListener(view -> {
+                Log.d(TAG, "onBindViewHolder: initiating text message...");
+                Intent messageIntent = new Intent(Intent.ACTION_SEND, Uri.fromParts("sms", mContactInfo.get(position), null));
+                mContext.startActivity(messageIntent);
             });
         }
     }
