@@ -1,5 +1,9 @@
 package com.example.contact.Adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,15 +13,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.contact.MainActivity;
 import com.example.contact.R;
+import com.example.contact.utils.Permissions;
 
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 public class ContactInfoAdapter extends RecyclerView.Adapter<ContactInfoAdapter.ViewHolder> {
 
     private final List<String> mContactInfo;
+    private final Context mContext;
 
-    public ContactInfoAdapter(List<String> contactInfo) {
+    public ContactInfoAdapter(Context context, List<String> contactInfo) {
+        mContext = context;
         mContactInfo = contactInfo;
     }
 
@@ -39,6 +49,15 @@ public class ContactInfoAdapter extends RecyclerView.Adapter<ContactInfoAdapter.
             holder.leftImageView.setImageResource(R.drawable.ic_call);
             holder.rightImageView.setImageResource(R.drawable.ic_message);
             holder.centerTextView.setText(mContactInfo.get(position));
+            holder.leftImageView.setOnClickListener(view -> {
+                if (((MainActivity)mContext).checkPermission(Permissions.PHONE_PERMISSION)) {
+                    Log.d(TAG, "onBindViewHolder: initiating phone call...");
+                    Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", mContactInfo.get(position), null));
+                    mContext.startActivity(callIntent);
+                } else {
+                    ((MainActivity)mContext).verifyPermission(Permissions.PHONE_PERMISSION);
+                }
+            });
         }
     }
 

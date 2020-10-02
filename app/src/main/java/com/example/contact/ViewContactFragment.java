@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -73,7 +72,7 @@ public class ViewContactFragment extends Fragment {
         List<String> contactInfo = new ArrayList<>();
         contactInfo.add(mContact.getNumber());
         contactInfo.add(mContact.getMail());
-        ContactInfoAdapter adapter = new ContactInfoAdapter(contactInfo);
+        ContactInfoAdapter adapter = new ContactInfoAdapter(getContext(), contactInfo);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
