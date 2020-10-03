@@ -1,5 +1,6 @@
 package com.example.contact;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,8 +25,10 @@ import com.example.contact.utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 
 public class ViewContactFragment extends Fragment {
@@ -43,6 +45,7 @@ public class ViewContactFragment extends Fragment {
     private TextView mTextView;
     private View mBackArrow;
     private View mEditButton;
+    private OnEditContactListener mOnEditContactSelected;
 
     @Nullable
     @Override
@@ -96,17 +99,9 @@ public class ViewContactFragment extends Fragment {
         mEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moveToEditContactFragment();
+                mOnEditContactSelected.onEditContactSelected(mContact);
             }
         });
-    }
-
-    private void moveToEditContactFragment() {
-        Fragment editContactFragment = new EditContactFragment();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, editContactFragment);
-        transaction.addToBackStack(getString(R.string.view_contact_fragment));
-        transaction.commit();
     }
 
     @Override
@@ -132,5 +127,19 @@ public class ViewContactFragment extends Fragment {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            mOnEditContactSelected = (OnEditContactListener)getActivity();
+        } catch (ClassCastException e) {
+            Log.e(TAG, "ClassCastException: " + e.getMessage());
+        }
+    }
+
+    public interface OnEditContactListener {
+        void onEditContactSelected(Contact contact);
     }
 }

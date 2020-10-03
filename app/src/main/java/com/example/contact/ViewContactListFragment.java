@@ -22,7 +22,6 @@ import com.example.contact.DataModel.Contact;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ViewContactListFragment extends Fragment {
 
@@ -44,7 +43,7 @@ public class ViewContactListFragment extends Fragment {
     private ContactRecyclerAdapter mAdapter;
     private List<Contact> mContactList = new ArrayList<>();
     private int mToolBarState;
-    private Consumer<Contact> mContactSelectedListener;
+    private OnContactSelectedListener mOnContactSelectedListener;
 
     @Nullable
     @Override
@@ -117,7 +116,7 @@ public class ViewContactListFragment extends Fragment {
     private void initRecyclerView() {
         mRecyclerView = mView.findViewById(R.id.recycler_view);
         mAdapter = new ContactRecyclerAdapter(getContext(), mContactList, position -> {
-            mContactSelectedListener.accept(mContactList.get(position));
+            mOnContactSelectedListener.onContactSelected(mContactList.get(position));
         });
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -139,7 +138,7 @@ public class ViewContactListFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            mContactSelectedListener = (Consumer<Contact>)getActivity();
+            mOnContactSelectedListener = (OnContactSelectedListener)getActivity();
         } catch (ClassCastException e) {
             Log.e(TAG, "ClassCastException: " + e.getMessage());
         }
@@ -149,5 +148,9 @@ public class ViewContactListFragment extends Fragment {
     public void onPause() {
         super.onPause();
         changeToolbarState(STANDARD_MODE);
+    }
+
+    public interface OnContactSelectedListener {
+        void onContactSelected(Contact contact);
     }
 }

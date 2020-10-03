@@ -3,6 +3,7 @@ package com.example.contact;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.pm.PackageManager;
@@ -11,9 +12,10 @@ import android.util.Log;
 
 import com.example.contact.DataModel.Contact;
 
-import java.util.function.Consumer;
 
-public class MainActivity extends AppCompatActivity implements Consumer<Contact>{
+public class MainActivity extends AppCompatActivity implements
+        ViewContactListFragment.OnContactSelectedListener,
+        ViewContactFragment.OnEditContactListener {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
 
@@ -33,11 +35,6 @@ public class MainActivity extends AppCompatActivity implements Consumer<Contact>
         transaction.commit();
     }
 
-    @Override
-    public void accept(Contact contact) {
-        moveToViewContactFragment(contact);
-    }
-
     private void moveToViewContactFragment(Contact contact) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(getString(R.string.contact), contact);
@@ -46,6 +43,17 @@ public class MainActivity extends AppCompatActivity implements Consumer<Contact>
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container,fragment);
         transaction.addToBackStack(getString(R.string.view_contact_list_fragment));
+        transaction.commit();
+    }
+
+    private void moveToEditContactFragment(Contact contact) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.contact), contact);
+        Fragment editContactFragment = new EditContactFragment();
+        editContactFragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, editContactFragment);
+        transaction.addToBackStack(getString(R.string.view_contact_fragment));
         transaction.commit();
     }
 
@@ -88,5 +96,15 @@ public class MainActivity extends AppCompatActivity implements Consumer<Contact>
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onContactSelected(Contact contact) {
+        moveToViewContactFragment(contact);
+    }
+
+    @Override
+    public void onEditContactSelected(Contact contact) {
+        moveToEditContactFragment(contact);
     }
 }
