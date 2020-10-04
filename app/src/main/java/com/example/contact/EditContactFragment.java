@@ -20,7 +20,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.contact.DataModel.Contact;
+import com.example.contact.utils.ChangeImageDialog;
 import com.example.contact.utils.ImageLoader;
+import com.example.contact.utils.Permissions;
 
 public class EditContactFragment extends Fragment {
     private static final String TAG = "EditContactFragment";
@@ -53,6 +55,7 @@ public class EditContactFragment extends Fragment {
     private void setListener() {
         ImageView backArrow = mView.findViewById(R.id.edit_contact_toolbar_back_icon);
         ImageView checkImage = mView.findViewById(R.id.edit_contact_toolbar_check_icon);
+        ImageView cameraIcon = mView.findViewById(R.id.camera_icon);
         backArrow.setOnClickListener(view -> {
             getActivity().getSupportFragmentManager().popBackStack();
         });
@@ -60,6 +63,51 @@ public class EditContactFragment extends Fragment {
             saveChanges();
             hideSoftKeyboard();
         });
+
+        cameraIcon.setOnClickListener(view -> {
+            if (isAllPermissionGranted()) {
+                openDialog();
+            }
+        });
+    }
+
+    private void openDialog() {
+        ChangeImageDialog changeImageDialog = new ChangeImageDialog();
+        changeImageDialog.show(getFragmentManager(), getString(R.string.dialog_change_photo));
+    }
+
+    private boolean isAllPermissionGranted() {
+        if (!checkWriteStoragePermission()) {
+            return false;
+        }
+
+        if (!checkCameraPermission()) {
+            return false;
+        }
+        return  true;
+    }
+
+
+    private boolean checkWriteStoragePermission() {
+        if (!((MainActivity)getActivity()).checkPermission(Permissions.WRITE_STORAGE_PERMISSION)) {
+            ((MainActivity)getActivity()).setOnPermissionGrantedListener(() -> {
+                checkCameraPermission();
+            });
+            ((MainActivity)getActivity()).requestPermission(Permissions.WRITE_STORAGE_PERMISSION);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkCameraPermission() {
+        if (!((MainActivity)getActivity()).checkPermission(Permissions.CAMERA_PERMISSION)) {
+            ((MainActivity)getActivity()).setOnPermissionGrantedListener(() -> {
+                openDialog();
+            });
+            ((MainActivity)getActivity()).requestPermission(Permissions.CAMERA_PERMISSION);
+            return false;
+        }
+        return true;
     }
 
     private void saveChanges() {

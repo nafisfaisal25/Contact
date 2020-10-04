@@ -62,7 +62,7 @@ public class ContactInfoAdapter extends RecyclerView.Adapter<ContactInfoAdapter.
                     Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", mContactInfo.get(position), null));
                     mContext.startActivity(callIntent);
                 } else {
-                    ((MainActivity)mContext).verifyPermission(Permissions.PHONE_PERMISSION);
+                    ((MainActivity)mContext).requestPermission(Permissions.PHONE_PERMISSION);
                 }
             });
 

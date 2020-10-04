@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements
         ViewContactFragment.OnEditContactListener {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
+    private OnPermissionGrantedListener mOnPermissionGrantedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +62,9 @@ public class MainActivity extends AppCompatActivity implements
      * Method for asking permission. Can ask any array of permission.
      * @param permissions
      */
-    public void verifyPermission(String [] permissions) {
+    public void requestPermission(String [] permissions) {
         Log.d(TAG, "verifyPermission: asking user for permission");
         ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE);
-
     }
 
     public boolean checkPermission(String [] permissions) {
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
             case REQUEST_CODE:
                 for (int i=0; i < permissions.length; i++) {
                     if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        mOnPermissionGrantedListener.onPermissionGranted();
                         Log.d(TAG, "onRequestPermissionsResult: user has allowed permission to access " + permissions[i]);
                     } else {
                         Log.d(TAG, "onRequestPermissionsResult: user has denied permission to access" + permissions[i]);
@@ -106,5 +107,13 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onEditContactSelected(Contact contact) {
         moveToEditContactFragment(contact);
+    }
+
+    public interface OnPermissionGrantedListener {
+        void onPermissionGranted();
+    }
+
+    public void setOnPermissionGrantedListener(OnPermissionGrantedListener onPermissionGrantedListener) {
+        mOnPermissionGrantedListener = onPermissionGrantedListener;
     }
 }
