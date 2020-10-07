@@ -1,6 +1,7 @@
 package com.example.contact;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ import com.example.contact.utils.ChangeImageDialog;
 import com.example.contact.utils.ImageLoader;
 import com.example.contact.utils.Permissions;
 
-public class EditContactFragment extends Fragment {
+public class EditContactFragment extends Fragment implements ChangeImageDialog.OnPhotoReceivedListener {
     private static final String TAG = "EditContactFragment";
 
     //ui_component
@@ -66,14 +67,15 @@ public class EditContactFragment extends Fragment {
 
         cameraIcon.setOnClickListener(view -> {
             if (isAllPermissionGranted()) {
-                openDialog();
+                openDialogFragment();
             }
         });
     }
 
-    private void openDialog() {
+    private void openDialogFragment() {
         ChangeImageDialog changeImageDialog = new ChangeImageDialog();
         changeImageDialog.show(getFragmentManager(), getString(R.string.dialog_change_photo));
+        changeImageDialog.setTargetFragment(EditContactFragment.this, 0);
     }
 
     private boolean isAllPermissionGranted() {
@@ -102,7 +104,7 @@ public class EditContactFragment extends Fragment {
     private boolean checkCameraPermission() {
         if (!((MainActivity)getActivity()).checkPermission(Permissions.CAMERA_PERMISSION)) {
             ((MainActivity)getActivity()).setOnPermissionGrantedListener(() -> {
-                openDialog();
+                openDialogFragment();
             });
             ((MainActivity)getActivity()).requestPermission(Permissions.CAMERA_PERMISSION);
             return false;
@@ -161,4 +163,11 @@ public class EditContactFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onPhotoReceived(Bitmap bitmap) {
+        if (bitmap != null) {
+            ((MainActivity)getActivity()).compressBitmap(bitmap, 100);
+            mContactImage.setImageBitmap(bitmap);
+        }
+    }
 }

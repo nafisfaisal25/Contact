@@ -7,10 +7,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.contact.DataModel.Contact;
+
+import java.io.ByteArrayOutputStream;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -56,6 +59,18 @@ public class MainActivity extends AppCompatActivity implements
         transaction.replace(R.id.fragment_container, editContactFragment);
         transaction.addToBackStack(getString(R.string.view_contact_fragment));
         transaction.commit();
+    }
+
+    /**
+     * Compress the bitmap size.
+     * @param bitmap
+     * @param quality
+     * @return
+     */
+    public Bitmap compressBitmap(Bitmap bitmap, int quality) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+        return bitmap;
     }
 
     /**
