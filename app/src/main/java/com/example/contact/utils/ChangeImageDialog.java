@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.contact.R;
 
+
 public class ChangeImageDialog extends DialogFragment {
+    private static final String TAG = "ChangeImageDialog";
     private OnPhotoReceivedListener mOnPhotoReceivedListener;
 
     @Nullable
@@ -40,6 +44,12 @@ public class ChangeImageDialog extends DialogFragment {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, Permissions.CAMERA_REQUEST_CODE);
         });
+
+        choosePhoto.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("Image/*");
+            startActivityForResult(intent, Permissions.PICFILE_REQUEST_CODE);
+        });
     }
 
 
@@ -48,13 +58,21 @@ public class ChangeImageDialog extends DialogFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Permissions.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            mOnPhotoReceivedListener.getBitMapImage(bitmap);
             getDialog().dismiss();
-            mOnPhotoReceivedListener.onPhotoReceived(bitmap);
+        }
+
+        if (requestCode == Permissions.PICFILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri imagePathUri = data.getData();
+            Log.d(TAG, "onActivityResult: " + imagePathUri);
+            mOnPhotoReceivedListener.getImagePath(imagePathUri);
+            getDialog().dismiss();
         }
     }
 
     public interface OnPhotoReceivedListener {
-        void onPhotoReceived(Bitmap bitmap);
+        void getBitMapImage(Bitmap bitmap);
+        void getImagePath(Uri imagePathUri);
     }
 
     @Override

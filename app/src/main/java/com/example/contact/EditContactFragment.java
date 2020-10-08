@@ -2,6 +2,7 @@ package com.example.contact;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -135,7 +136,6 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
         mContactNumberEditText.setText(mContact.getNumber());
         mContactEmailEditText.setText(mContact.getMail());
         ImageLoader.loadImage(getContext(), mContactImage, mContact.getImageUrl());
-
     }
 
     private Contact getContactFromBundle() {
@@ -164,10 +164,15 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
     }
 
     @Override
-    public void onPhotoReceived(Bitmap bitmap) {
+    public void getBitMapImage(Bitmap bitmap) {
         if (bitmap != null) {
             ((MainActivity)getActivity()).compressBitmap(bitmap, 100);
             mContactImage.setImageBitmap(bitmap);
         }
+    }
+
+    @Override
+    public void getImagePath(Uri imagePathUri) {
+        ImageLoader.loadImageFromSdCard(getContext(), mContactImage, imagePathUri);
     }
 }
