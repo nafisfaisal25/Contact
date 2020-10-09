@@ -47,6 +47,7 @@ public class ViewContactFragment extends Fragment {
     private View mEditButton;
     private OnEditContactListener mOnEditContactSelected;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

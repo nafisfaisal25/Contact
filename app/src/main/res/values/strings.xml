@@ -5,6 +5,7 @@
     <string name="view_contact_list_fragment">ViewContactListFragment</string>
     <string name="edit_contact_list_fragment">EditContactFragment</string>
     <string name="view_contact_fragment">ViewContactFragment</string>
+    <string name="add_contact_fragment">AddContactFragment</string>
     <string name="contact">Contact</string>
     <string name="dialog_change_photo">ChangePhotoDialog</string>
     

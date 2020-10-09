@@ -18,7 +18,8 @@ import java.io.ByteArrayOutputStream;
 
 public class MainActivity extends AppCompatActivity implements
         ViewContactListFragment.OnContactSelectedListener,
-        ViewContactFragment.OnEditContactListener {
+        ViewContactFragment.OnEditContactListener,
+        ViewContactListFragment.OnContactAddedListener {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
     private OnPermissionGrantedListener mOnPermissionGrantedListener;
@@ -58,6 +59,14 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, editContactFragment);
         transaction.addToBackStack(getString(R.string.view_contact_fragment));
+        transaction.commit();
+    }
+
+    private void moveToAddContactFragment() {
+        Fragment fragment = new AddContactFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(getString(R.string.add_contact_fragment));
         transaction.commit();
     }
 
@@ -122,6 +131,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onEditContactSelected(Contact contact) {
         moveToEditContactFragment(contact);
+    }
+
+    @Override
+    public void onContactAdded() {
+        moveToAddContactFragment();
     }
 
     public interface OnPermissionGrantedListener {

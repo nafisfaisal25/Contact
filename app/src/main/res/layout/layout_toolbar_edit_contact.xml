@@ -25,10 +25,10 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/edit_contact_toolbar_back_icon"
             android:textSize="20sp"
-            android:text="Edit Contact"
             android:textColor="@color/white"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp"
+            android:id="@+id/edit_contact_toolbar_text_view"/>
 
 
         <ImageView

@@ -2,6 +2,8 @@ package com.example.contact;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contact.Adapter.ContactRecyclerAdapter;
 import com.example.contact.DataModel.Contact;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.nio.file.Watchable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +42,14 @@ public class ViewContactListFragment extends Fragment {
     private ImageView mBackArrow;
     private ImageView mSearchIcon;
     private EditText mSearchEditText;
+    private FloatingActionButton fab;
 
     //vars
     private ContactRecyclerAdapter mAdapter;
     private List<Contact> mContactList = new ArrayList<>();
     private int mToolBarState;
     private OnContactSelectedListener mOnContactSelectedListener;
+    private OnContactAddedListener mOnContactAddedListener;
 
     @Nullable
     @Override
@@ -56,6 +62,7 @@ public class ViewContactListFragment extends Fragment {
          mBackArrow = mView.findViewById(R.id.search_back_arrow);
          mSearchIcon = mView.findViewById(R.id.toolbar_search_icon);
          mSearchEditText = mView.findViewById(R.id.search_edit_text);
+         fab = mView.findViewById(R.id.fab_add_contact);
          setListener();
 
         return mView;
@@ -75,6 +82,27 @@ public class ViewContactListFragment extends Fragment {
                 toggleToolbarState();
             }
         });
+
+        fab.setOnClickListener(v -> {
+            mOnContactAddedListener.onContactAdded();
+        });
+
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mAdapter.filter(s.toString());
+            }
+        });
     }
 
     private void toggleToolbarState() {
@@ -82,6 +110,7 @@ public class ViewContactListFragment extends Fragment {
             changeToolbarState(SEARCH_MODE);
         } else {
             changeToolbarState(STANDARD_MODE);
+            mAdapter.filter("");
         }
     }
 
@@ -139,6 +168,7 @@ public class ViewContactListFragment extends Fragment {
         super.onAttach(context);
         try {
             mOnContactSelectedListener = (OnContactSelectedListener)getActivity();
+            mOnContactAddedListener = (OnContactAddedListener)getActivity();
         } catch (ClassCastException e) {
             Log.e(TAG, "ClassCastException: " + e.getMessage());
         }
@@ -152,5 +182,9 @@ public class ViewContactListFragment extends Fragment {
 
     public interface OnContactSelectedListener {
         void onContactSelected(Contact contact);
+    }
+
+    public interface OnContactAddedListener {
+        void onContactAdded();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.contact.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,21 +14,27 @@ import com.bumptech.glide.Glide;
 import com.example.contact.DataModel.Contact;
 import com.example.contact.R;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecyclerAdapter.ViewHolder> {
 
+    private static final String TAG = "ContactRecyclerAdapter";
+
     private final Context mContext;
     List<Contact>mContactList;
+    List<Contact> mBackUpContactList;
     Consumer<Integer> mOnClickListener;
 
     public ContactRecyclerAdapter(Context context, List<Contact> mContactList, Consumer<Integer>onClickListener) {
         this.mContactList = mContactList;
         mContext = context;
         mOnClickListener = onClickListener;
+        mBackUpContactList = new ArrayList<>(mContactList);
     }
 
     @NonNull
@@ -50,6 +57,14 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
     @Override
     public int getItemCount() {
         return mContactList.size();
+    }
+
+    public void filter(String name) {
+        mContactList = mBackUpContactList.stream().filter(contact -> {
+            Log.d(TAG, "filter: " + contact.getName().toLowerCase().contains(name.toLowerCase()));
+            return contact.getName().toLowerCase().contains(name.toLowerCase());
+        }).collect(Collectors.toList());
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

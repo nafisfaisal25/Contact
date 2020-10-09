@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,8 +30,13 @@ import com.example.contact.utils.ChangeImageDialog;
 import com.example.contact.utils.ImageLoader;
 import com.example.contact.utils.Permissions;
 
-public class EditContactFragment extends Fragment implements ChangeImageDialog.OnPhotoReceivedListener {
-    private static final String TAG = "EditContactFragment";
+import java.util.Locale;
+
+import io.michaelrocks.libphonenumber.android.AsYouTypeFormatter;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+
+public class AddContactFragment extends Fragment implements ChangeImageDialog.OnPhotoReceivedListener {
+    private static final String TAG = "AddContactFragment";
 
     //ui_component
     private View mView;
@@ -37,20 +44,19 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
     private EditText mContactNumberEditText;
     private EditText mContactEmailEditText;
     private ImageView mContactImage;
+
     //variables
-    private Contact mContact;
+//    private Contact mContact;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.fragment_edit_contact_info, container, false);
-        ((TextView)mView.findViewById(R.id.edit_contact_toolbar_text_view)).setText("Edit Text");
-        mContact = getContactFromBundle();
-        if (mContact != null) {
-            setContactInfo();
-            setListener();
-        }
+        mView = inflater.inflate(R.layout.fragment_add_contact, container, false);
+        ((TextView)mView.findViewById(R.id.edit_contact_toolbar_text_view)).setText("Add Contact");
+        setContactInfo();
+        setListener();
+
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) mView.findViewById(R.id.edit_contact_toolbar));
         setHasOptionsMenu(true);
 
@@ -61,6 +67,7 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
         ImageView backArrow = mView.findViewById(R.id.edit_contact_toolbar_back_icon);
         ImageView checkImage = mView.findViewById(R.id.edit_contact_toolbar_check_icon);
         ImageView cameraIcon = mView.findViewById(R.id.camera_icon);
+
         backArrow.setOnClickListener(view -> {
             getActivity().getSupportFragmentManager().popBackStack();
         });
@@ -74,12 +81,17 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
                 openDialogFragment();
             }
         });
+        initOnTextChangeListener();
+    }
+
+    private void initOnTextChangeListener() {
+        mContactNumberEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher("BD"));
     }
 
     private void openDialogFragment() {
         ChangeImageDialog changeImageDialog = new ChangeImageDialog();
         changeImageDialog.show(getFragmentManager(), getString(R.string.dialog_change_photo));
-        changeImageDialog.setTargetFragment(EditContactFragment.this, 0);
+        changeImageDialog.setTargetFragment(AddContactFragment.this, 0);
     }
 
     private boolean isAllPermissionGranted() {
@@ -135,21 +147,6 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
         mContactNumberEditText = mView.findViewById(R.id.edit_text_contact_number);
         mContactEmailEditText = mView.findViewById(R.id.edit_text_contact_email);
         mContactImage = mView.findViewById(R.id.contact_image);
-        mContactNameEditText.setText(mContact.getName());
-        mContactNumberEditText.setText(mContact.getNumber());
-        mContactEmailEditText.setText(mContact.getMail());
-        ImageLoader.loadImage(getContext(), mContactImage, mContact.getImageUrl());
-        mContactNumberEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher("BD"));
-    }
-
-    private Contact getContactFromBundle() {
-        Log.d(TAG, "getContactFromBundle: " + this.getArguments());
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            return bundle.getParcelable(getString(R.string.contact));
-        } else {
-            return null;
-        }
     }
 
     @Override
