@@ -12,16 +12,28 @@ public class Contact implements Parcelable {
     private String mEmail;
     private String mDevice;
 
-    public Contact(String mName, String mImageUrl, String mNumber, String mail, String mDevice) {
-        this.mName = mName;
-        this.mProfileImageUrl = mImageUrl;
-        this.mContactNumber = mNumber;
-        this.mEmail = mail;
-        this.mDevice = mDevice;
-    }
-
     private Contact() {
     }
+
+    protected Contact(Parcel in) {
+        mName = in.readString();
+        mProfileImageUrl = in.readString();
+        mContactNumber = in.readString();
+        mEmail = in.readString();
+        mDevice = in.readString();
+    }
+
+    public static final Creator<Contact> CREATOR = new Creator<Contact>() {
+        @Override
+        public Contact createFromParcel(Parcel in) {
+            return new Contact(in);
+        }
+
+        @Override
+        public Contact[] newArray(int size) {
+            return new Contact[size];
+        }
+    };
 
     public Contact setName(String mName) {
         this.mName = mName;
@@ -81,6 +93,10 @@ public class Contact implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeString(mName);
+        dest.writeString(mProfileImageUrl);
+        dest.writeString(mContactNumber);
+        dest.writeString(mEmail);
+        dest.writeString(mDevice);
     }
 }

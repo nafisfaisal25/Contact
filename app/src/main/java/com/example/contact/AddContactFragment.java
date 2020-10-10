@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.contact.DataModel.Contact;
 import com.example.contact.utils.ChangeImageDialog;
+import com.example.contact.utils.DataBaseHelper;
 import com.example.contact.utils.ImageLoader;
 import com.example.contact.utils.Permissions;
 
@@ -44,9 +46,7 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
     private EditText mContactNumberEditText;
     private EditText mContactEmailEditText;
     private ImageView mContactImage;
-
-    //variables
-//    private Contact mContact;
+    private String mSelectedImagePath;
 
 
     @Nullable
@@ -72,7 +72,7 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
             getActivity().getSupportFragmentManager().popBackStack();
         });
         checkImage.setOnClickListener(view -> {
-            saveChanges();
+            addContactToDatabase();
             hideSoftKeyboard();
         });
 
@@ -82,6 +82,33 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
             }
         });
         initOnTextChangeListener();
+    }
+
+    private void addContactToDatabase() {
+
+        if (nameNotEmpty()) {
+            Contact contact = Contact.create(contact1 -> {
+                contact1.setName(mContactNameEditText.getText().toString())
+                        .setNumber(mContactNumberEditText.getText().toString())
+                        .setMail(mContactEmailEditText.getText().toString())
+                        .setImageUrl(mSelectedImagePath);
+            });
+            DataBaseHelper helper = new DataBaseHelper(getContext());
+            if (helper.addContact(contact)) {
+                Toast.makeText(getContext(), "Contact saved", Toast.LENGTH_SHORT).show();
+                getFragmentManager().popBackStack();
+            } else {
+                Toast.makeText(getContext(), "Failed to save contact", Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            mContactNameEditText.setError("Name is required");
+        }
+
+    }
+
+    private boolean nameNotEmpty() {
+        return !mContactNameEditText.getText().toString().isEmpty();
     }
 
     private void initOnTextChangeListener() {
@@ -175,5 +202,6 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
     @Override
     public void getImagePath(Uri imagePathUri) {
         ImageLoader.loadImageFromSdCard(getContext(), mContactImage, imagePathUri);
+        mSelectedImagePath = imagePathUri.toString();
     }
 }
