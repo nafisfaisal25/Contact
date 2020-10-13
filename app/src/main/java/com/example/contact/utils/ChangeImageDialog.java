@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.contact.R;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Date;
 
 
 public class ChangeImageDialog extends DialogFragment {
@@ -58,7 +63,11 @@ public class ChangeImageDialog extends DialogFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Permissions.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            mOnPhotoReceivedListener.getBitMapImage(bitmap);
+
+            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+            Uri imageUri = getImageUri(getContext().getApplicationContext(), bitmap);
+
+            mOnPhotoReceivedListener.getBitMapImage(bitmap, imageUri);
             getDialog().dismiss();
         }
 
@@ -70,8 +79,15 @@ public class ChangeImageDialog extends DialogFragment {
         }
     }
 
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
     public interface OnPhotoReceivedListener {
-        void getBitMapImage(Bitmap bitmap);
+        void getBitMapImage(Bitmap bitmap, Uri imagePathUri);
         void getImagePath(Uri imagePathUri);
     }
 

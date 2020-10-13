@@ -1,6 +1,7 @@
 package com.example.contact;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,10 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contact.Adapter.ContactRecyclerAdapter;
 import com.example.contact.DataModel.Contact;
+import com.example.contact.utils.DataBaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.nio.file.Watchable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ViewContactListFragment extends Fragment {
@@ -55,7 +57,7 @@ public class ViewContactListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
          mView = inflater.inflate(R.layout.fragment_view_contact_list,container,false);
-         createDummyContactList();
+         loadContactFromDb();
          initRecyclerView();
          mSearchToolBar = mView.findViewById(R.id.search_toolbar);
          mStandardToolBar = mView.findViewById(R.id.standard_toolbar);
@@ -151,16 +153,26 @@ public class ViewContactListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    private void createDummyContactList() {
-        for(int i=0;i<100;i++){
-            Contact contact = Contact.create(contact1 -> {
-                contact1.setName("Nafis Faisal")
-                        .setMail("fnafis0@gmail.com")
-                        .setImageUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/1200px-Android_robot.svg.png")
-                        .setNumber("+8801867775687");
-            });
-            mContactList.add(contact);
+    private void loadContactFromDb() {
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+        Cursor cursor = dataBaseHelper.getAllContacts();
+        mContactList.clear();
+        while (cursor.moveToNext()) {
+            mContactList.add(Contact.create(c -> {
+                c.setName(cursor.getString(1))
+                        .setNumber(cursor.getString(2))
+                        .setDevice(cursor.getString(3))
+                        .setMail(cursor.getString(4))
+                        .setImageUrl(cursor.getString(5));
+            }));
         }
+        sortContactsByName();
+    }
+
+    private void sortContactsByName() {
+        Collections.sort(mContactList, (contact1, contact2) -> {
+            return contact1.getName().compareToIgnoreCase(contact2.getName());
+        });
     }
 
     @Override

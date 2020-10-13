@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,11 +29,6 @@ import com.example.contact.utils.ChangeImageDialog;
 import com.example.contact.utils.DataBaseHelper;
 import com.example.contact.utils.ImageLoader;
 import com.example.contact.utils.Permissions;
-
-import java.util.Locale;
-
-import io.michaelrocks.libphonenumber.android.AsYouTypeFormatter;
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 
 public class AddContactFragment extends Fragment implements ChangeImageDialog.OnPhotoReceivedListener {
     private static final String TAG = "AddContactFragment";
@@ -118,7 +111,7 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
     private void openDialogFragment() {
         ChangeImageDialog changeImageDialog = new ChangeImageDialog();
         changeImageDialog.show(getFragmentManager(), getString(R.string.dialog_change_photo));
-        changeImageDialog.setTargetFragment(AddContactFragment.this, 0);
+        changeImageDialog.setTargetFragment(AddContactFragment.this, Permissions.PICFILE_REQUEST_CODE);
     }
 
     private boolean isAllPermissionGranted() {
@@ -192,10 +185,11 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
     }
 
     @Override
-    public void getBitMapImage(Bitmap bitmap) {
+    public void getBitMapImage(Bitmap bitmap, Uri imagePathUri) {
         if (bitmap != null) {
             ((MainActivity)getActivity()).compressBitmap(bitmap, 100);
             mContactImage.setImageBitmap(bitmap);
+            mSelectedImagePath = imagePathUri.toString();
         }
     }
 

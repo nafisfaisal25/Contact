@@ -1,6 +1,7 @@
 package com.example.contact.Adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.contact.DataModel.Contact;
 import com.example.contact.R;
+import com.example.contact.utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +49,11 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.textView.setText(mContactList.get(position).getName());
-        Glide.with(mContext)
-                .asBitmap()
-                .load(mContactList.get(position).getImageUrl())
-                .into(holder.imageView);
+        Log.d(TAG, "onBindViewHolder: name: "+ mContactList.get(position).getName());
+        Log.d(TAG, "onBindViewHolder: ImagePath: "+ mContactList.get(position).getImageUrl());
+        if (mContactList.get(position).getImageUrl() != null) {
+            ImageLoader.loadImageFromSdCard(mContext, holder.imageView, Uri.parse(mContactList.get(position).getImageUrl()));
+        }
     }
 
     @Override

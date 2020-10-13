@@ -1,6 +1,7 @@
 package com.example.contact;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +27,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.contact.DataModel.Contact;
 import com.example.contact.utils.ChangeImageDialog;
+import com.example.contact.utils.DataBaseHelper;
 import com.example.contact.utils.ImageLoader;
 import com.example.contact.utils.Permissions;
 
@@ -39,13 +42,14 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
     private ImageView mContactImage;
     //variables
     private Contact mContact;
+    private String mSelectedImagePath;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_edit_contact_info, container, false);
-        ((TextView)mView.findViewById(R.id.edit_contact_toolbar_text_view)).setText("Edit Text");
+        ((TextView)mView.findViewById(R.id.edit_contact_toolbar_text_view)).setText("Edit Contact");
         mContact = getContactFromBundle();
         if (mContact != null) {
             setContactInfo();
@@ -65,8 +69,9 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
             getActivity().getSupportFragmentManager().popBackStack();
         });
         checkImage.setOnClickListener(view -> {
-            saveChanges();
+            saveChangesToDatabase();
             hideSoftKeyboard();
+            getActivity().getSupportFragmentManager().popBackStack();
         });
 
         cameraIcon.setOnClickListener(view -> {
@@ -116,8 +121,27 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
         return true;
     }
 
-    private void saveChanges() {
-        mContactNameEditText.setText(mContactNameEditText.getText());
+    private void saveChangesToDatabase() {
+        DataBaseHelper helper = new DataBaseHelper(getContext());
+        Cursor cursor = helper.getContactId(mContact);
+        int id = -1;
+        while (cursor.moveToNext()) {
+            id = cursor.getInt(0);
+        }
+        if (id > -1) {
+            mContact.setName(mContactNameEditText.getText().toString());
+            mContact.setNumber(mContactNumberEditText.getText().toString());
+            mContact.setMail(mContactEmailEditText.getText().toString());
+            if (mSelectedImagePath != null) {
+                mContact.setImageUrl(mSelectedImagePath);
+            }
+            if (helper.updateContact(mContact, id)) {
+                Toast.makeText(getContext(), "contact updated", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "failed to update contact", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     private void hideSoftKeyboard() {
@@ -168,15 +192,17 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
     }
 
     @Override
-    public void getBitMapImage(Bitmap bitmap) {
+    public void getBitMapImage(Bitmap bitmap, Uri imagePathUri) {
         if (bitmap != null) {
             ((MainActivity)getActivity()).compressBitmap(bitmap, 100);
             mContactImage.setImageBitmap(bitmap);
+            mSelectedImagePath = imagePathUri.toString();
         }
     }
 
     @Override
     public void getImagePath(Uri imagePathUri) {
         ImageLoader.loadImageFromSdCard(getContext(), mContactImage, imagePathUri);
+        mSelectedImagePath = imagePathUri.toString();
     }
 }
