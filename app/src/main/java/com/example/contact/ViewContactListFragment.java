@@ -199,4 +199,8 @@ public class ViewContactListFragment extends Fragment {
     public interface OnContactAddedListener {
         void onContactAdded();
     }
+
+
+
+
 }

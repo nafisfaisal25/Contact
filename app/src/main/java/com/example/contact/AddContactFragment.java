@@ -50,9 +50,6 @@ public class AddContactFragment extends Fragment implements ChangeImageDialog.On
         setContactInfo();
         setListener();
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) mView.findViewById(R.id.edit_contact_toolbar));
-        setHasOptionsMenu(true);
-
         return mView;
     }
 

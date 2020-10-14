@@ -107,4 +107,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return db.rawQuery(sql, null);
     }
+
+    public boolean deleteContact(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_NAME, COL0 + " = ?", new String[] {String.valueOf(id)});
+        if (result >= 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

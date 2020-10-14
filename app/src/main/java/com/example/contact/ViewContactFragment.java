@@ -1,6 +1,7 @@
 package com.example.contact;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contact.Adapter.ContactInfoAdapter;
 import com.example.contact.DataModel.Contact;
+import com.example.contact.utils.DataBaseHelper;
 import com.example.contact.utils.ImageLoader;
 
 import java.util.ArrayList;
@@ -115,9 +118,46 @@ public class ViewContactFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_delete :
-                Log.d(TAG, "item deleted");
+                deleteContact();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteContact() {
+        DataBaseHelper helper = new DataBaseHelper(getContext());
+        Cursor cursor = helper.getContactId(mContact);
+        int id = -1;
+        while (cursor.moveToNext()) {
+            id = cursor.getInt(0);
+        }
+        if (id != -1) {
+            if (helper.deleteContact(id)) {
+                this.getArguments().clear();
+                getFragmentManager().popBackStack();
+                Toast.makeText(getContext(), "contact deleted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "failed to delete contact", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * check is contact is deleted or not
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        DataBaseHelper helper = new DataBaseHelper(getContext());
+        Cursor cursor = helper.getContactId(mContact);
+        int id = -1;
+        while (cursor.moveToNext()) {
+            id = cursor.getInt(0);
+        }
+        if (id > -1) {
+            //contact exist. Do nothing
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 
     private Contact getContactFromBundle() {

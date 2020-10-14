@@ -186,9 +186,27 @@ public class EditContactFragment extends Fragment implements ChangeImageDialog.O
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_delete :
-                Log.d(TAG, "item deleted");
+                deleteContact();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteContact() {
+        DataBaseHelper helper = new DataBaseHelper(getContext());
+        Cursor cursor = helper.getContactId(mContact);
+        int id = -1;
+        while (cursor.moveToNext()) {
+            id = cursor.getInt(0);
+        }
+        if (id != -1) {
+            if (helper.deleteContact(id)) {
+                this.getArguments().clear();
+                getFragmentManager().popBackStack();
+                Toast.makeText(getContext(), "contact deleted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "failed to delete contact", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
